@@ -9,88 +9,9 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
-// funcval, errorMessage, key
-// funcval, format, errorMessage, key
-// funcval, errMessage, key1, key2
-
-type dataTag struct {
-	funcVal        string
-	errorMessage   string
-	format         string
-	compareKey     string
-	compareValue   string
-	dateLayout     string
-	acceptedValues string
-}
-
-// fetchDataTag idx must always starts from -1
-func fetchDataTag(input string, idx int, dataTags []*dataTag) []*dataTag {
-	if input == "" {
-		return dataTags
-	}
-	tagsSplits := strings.Split(input, "|")
-	if len(tagsSplits) > 1 {
-		for i := 0; i < len(tagsSplits); i++ {
-			dataTags = append(dataTags, &dataTag{})
-		}
-
-		for i := 0; i < len(tagsSplits); i++ {
-			fetchDataTag(tagsSplits[i], i, dataTags)
-		}
-
-		return dataTags
-	}
-
-	aTagSplits := strings.Split(input, ",")
-	if len(aTagSplits) > 1 {
-		if len(dataTags) == 0 {
-			dataTags = append(dataTags, &dataTag{})
-			idx = 0
-		}
-		for i := 0; i < len(aTagSplits); i++ {
-			fetchDataTag(aTagSplits[i], idx, dataTags)
-		}
-		return dataTags
-	}
-
-	splits := strings.Split(input, ":")
-	if len(dataTags) == 0 {
-		dataTags = append(dataTags, &dataTag{})
-		idx = 0
-	}
-
-	if len(splits) > 1 {
-		iTag := dataTags[idx]
-		if iTag == nil {
-			iTag = &dataTag{}
-			dataTags[idx] = iTag
-		}
-		switch splits[0] {
-		case "funcVal":
-			iTag.funcVal = splits[1]
-		case "errorMessage":
-			iTag.errorMessage = splits[1]
-		case "format":
-			iTag.format = splits[1]
-		case "compareValue":
-			iTag.compareValue = splits[1]
-		case "compareKey":
-			iTag.compareKey = splits[1]
-		case "dateLayout":
-			iTag.dateLayout = splits[1]
-		case "values":
-			iTag.acceptedValues = splits[1]
-		}
-		fetchDataTag("", idx, dataTags)
-	}
-
-	return dataTags
-
-}
-
+// DumpToString cast all data type to json string
 func DumpToString(v interface{}) string {
 
 	str, ok := v.(string)
@@ -125,10 +46,10 @@ func indirect(a interface{}) interface{} {
 }
 
 func mergeKeys(left, right url.Values) url.Values {
-
 	if len(right) == 0 {
 		return left
 	}
+
 	for key, rightVal := range right {
 		if _, present := left[key]; present {
 			//then we don't want to replace it - recurse
