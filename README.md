@@ -1,5 +1,6 @@
 ## Simple Struct Validator
 
+### example :
 ```go
 package main
 
@@ -13,7 +14,7 @@ type Person struct {
 	Name       string   `json:"name" valid:"required|min:3|max:10|alpha_space"`
 	Age        int      `json:"age" valid:"required|min:4|max:100"`
 	Status     string   `json:"status" valid:"in:success,failed"`
-	Address    *Address `json:"address" valid:"required|required_if:name"`
+	Address    *Address `json:"address" valid:"required"`
 	Phone      string   `json:"phone" valid:"required|id_phone"`
 	Validation func()
 }
