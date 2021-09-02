@@ -89,6 +89,7 @@ func AddNeFunc(key string, f interface{}) error {
 	return nil
 }
 
+// Required check empty value should required
 func Required(v interface{}, key, rule string, isRequired bool) error {
 	msg := `The %s field is required`
 
