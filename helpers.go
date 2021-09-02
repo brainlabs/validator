@@ -2,7 +2,6 @@
 package validator
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -32,13 +31,4 @@ func isRuleExist(rule string) bool {
 	}
 
 	return false
-}
-
-// toString force data to be string
-func toString(v interface{}) string {
-	str, ok := v.(string)
-	if !ok {
-		str = fmt.Sprintf("%#v", v)
-	}
-	return str
 }
