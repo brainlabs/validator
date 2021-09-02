@@ -32,7 +32,7 @@ func main() {
 		Age:    10,
 		Status: "success",
 		Address: &Address{
-			//AddressName: "jakarta medan",
+			//AddressName: "Street Walker Petir Jakarta No.20",
 		},
 		Phone: "62821020102010201",
 	}
