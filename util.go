@@ -176,10 +176,10 @@ func isEmpty(x interface{}) bool {
 
 	v := reflect.ValueOf(x)
 	switch v.Kind() {
-		ase reflect.String, reflect.Array:
+	case reflect.String, reflect.Array:
 		return v.Len() == 0
 	case reflect.Map, reflect.Slice:
-		return v.Len() == 0 || v.IsNil(
+		return v.Len() == 0 || v.IsNil()
 	case reflect.Bool:
 		return !v.Bool()
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -453,7 +453,6 @@ func isISBN10(str string) bool {
 func isISBN13(str string) bool {
 	return regexISBN13.MatchString(str)
 }
-
 
 // isIndonesiaPhoneNumber check the provided string is valid indonesian phone number or not
 func isIndonesiaPhoneNumber(str string) bool {
