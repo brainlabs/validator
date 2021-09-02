@@ -7,10 +7,10 @@ import (
 	"strings"
 )
 
-type rule func(value interface{}, fieldName, tagRule string, isRequired bool) error
+type ruleFunc func(value interface{}, fieldName, tagRule string, isRequired bool) error
 
 var (
-	rules = map[string]rule{
+	rules = map[string]ruleFunc{
 		"required":    Required,
 		"numeric":     ValidNumeric,
 		"float":       ValidFloat,
@@ -53,12 +53,12 @@ var funcSignature = []string{
 	"func(interface {}, string, string, string, string) error",
 }
 
-func AddNewRule(name string, fn func(field string, rule string, message string, value interface{}) error) error {
+func AddNewRule(name string, fn ruleFunc) error {
 	if isRuleExist(name) {
-		return fmt.Errorf("validator: %s is already defined in rules %+v", name)
+		return fmt.Errorf("validator: %s is already defined in rules", name)
 	}
 
-	rulesMap[name] = fn
+	rules[name] = fn
 	return nil
 }
 

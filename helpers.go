@@ -26,7 +26,7 @@ func isRuleExist(rule string) bool {
 			return true
 		}
 	}
-	if _, ok := rulesMap[rule]; ok {
+	if _, ok := rules[rule]; ok {
 		return true
 	}
 
