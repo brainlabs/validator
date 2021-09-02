@@ -16,7 +16,6 @@ type Person struct {
 	Status     string   `json:"status" valid:"in:success,failed"`
 	Address    *Address `json:"address" valid:"required"`
 	Phone      string   `json:"phone" valid:"required|id_phone"`
-	Validation func()
 }
 
 type Address struct {
