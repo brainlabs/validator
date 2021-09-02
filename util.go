@@ -176,10 +176,10 @@ func isEmpty(x interface{}) bool {
 
 	v := reflect.ValueOf(x)
 	switch v.Kind() {
-	case reflect.String:
-		return len(strings.TrimSpace(v.String())) == 0
-	case reflect.Array, reflect.Map, reflect.Slice:
+		ase reflect.String, reflect.Array:
 		return v.Len() == 0
+	case reflect.Map, reflect.Slice:
+		return v.Len() == 0 || v.IsNil(
 	case reflect.Bool:
 		return !v.Bool()
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -190,9 +190,9 @@ func isEmpty(x interface{}) bool {
 		return v.Float() == 0
 	case reflect.Interface, reflect.Ptr:
 		return v.IsNil()
-	default:
-		return false
 	}
+
+	return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
 }
 
 // ToString converts a value to string.
