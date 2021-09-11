@@ -8,7 +8,30 @@ import (
 	"strings"
 )
 
-type validator struct {
+const (
+	defaultTagRule  = `valid`
+	defaultTagField = `json`
+)
+
+type Option func(*Validator)
+
+type Validator struct {
+	TagField string
+	TagRule  string
+}
+
+// OptionTagField option tag field
+func OptionTagField(tag string) Option {
+	return func(v *Validator) {
+		v.TagField = tag
+	}
+}
+
+// OptionTagValidationRule option tag validation rule
+func OptionTagRule(tag string) Option {
+	return func(v *Validator) {
+		v.TagRule = tag
+	}
 }
 
 func validate(value interface{}, fieldName string, tags []string, errBag url.Values) error {
@@ -43,38 +66,38 @@ func validate(value interface{}, fieldName string, tags []string, errBag url.Val
 
 }
 
-func validateStruct(v reflect.Value, parentField string) url.Values {
+func validateStruct(v reflect.Value, parentField, tagField, tagRule string) url.Values {
 	errBag := url.Values{}
 	t := v.Type()
 	for i := 0; i < v.NumField(); i++ {
 		// gets us a StructField
 		fi := t.Field(i)
 
-		fn := fi.Tag.Get("json")
-		fv := fi.Tag.Get("valid")
+		tf := fi.Tag.Get(tagField)
+		tr := fi.Tag.Get(tagRule)
 
-		if fv == "" || fv == "-" {
+		if tr == "" || tr == "-" {
 			continue
 		}
 
-		tags := strings.Split(fv, "|")
+		tags := strings.Split(tr, "|")
 
 		if parentField != "" {
-			fn = fmt.Sprintf("%s.%s", parentField, fn)
+			tf = fmt.Sprintf("%s.%s", parentField, tf)
 		}
 
-		validate(v.Field(i).Interface(), fn, tags, errBag)
+		validate(v.Field(i).Interface(), tf, tags, errBag)
 
 		switch v.Field(i).Kind() {
 		case reflect.Struct:
-			eb := validateStruct(v.Field(i), fn)
+			eb := validateStruct(v.Field(i), tf, tagField, tagRule)
 			mergeKeys(errBag, eb)
 		case reflect.Slice:
 		case reflect.Ptr:
 			ptrRef := reflect.Indirect(v.Field(i))
 			switch ptrRef.Kind() {
 			case reflect.Struct:
-				eb := validateStruct(ptrRef, fn)
+				eb := validateStruct(ptrRef, tf, tagField, tagRule)
 				mergeKeys(errBag, eb)
 			}
 		}
@@ -84,11 +107,25 @@ func validateStruct(v reflect.Value, parentField string) url.Values {
 	return errBag
 }
 
-func New() *validator {
-	return &validator{}
+func New(options ...Option) *Validator {
+	x := &Validator{}
+
+	for _, opt := range options {
+		opt(x)
+	}
+
+	if x.TagRule == "" {
+		x.TagRule = defaultTagRule
+	}
+
+	if x.TagField == "" {
+		x.TagField = defaultTagField
+	}
+
+	return x
 }
 
-func (vl *validator) ValidateStruct(input interface{}) url.Values {
+func (vl *Validator) ValidateStruct(input interface{}) url.Values {
 	var errBag url.Values
 
 	val := reflect.ValueOf(input)
@@ -101,6 +138,5 @@ func (vl *validator) ValidateStruct(input interface{}) url.Values {
 		return errBag
 	}
 
-
-	return validateStruct(val, "")
+	return validateStruct(val, "", vl.TagField, vl.TagRule)
 }
