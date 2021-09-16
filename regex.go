@@ -47,7 +47,7 @@ const (
 	// Semver represents regular expression for semantic version
 	Semver string = "^v?(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(-(0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(\\.(0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\\+[0-9a-zA-Z-]+(\\.[0-9a-zA-Z-]+)*)?$"
 	// PhoneFormatIndonesia represents regular expression for indonesian phone number format
-	PhoneFormatIndonesia = `^([62]|[0])[0-9]+$`
+	PhoneFormatIndonesia = `^([62]|[0])+(8)[0-9]+$`
 	// URL represents regular expression for url
 	//URL string = "^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$" // Ref: https://stackoverflow.com/questions/136505/searching-for-uuids-in-text-with-regex
 	URLSchema    string = `((ftp|tcp|udp|wss?|https?):\/\/)`
