@@ -72,11 +72,20 @@ func validateStruct(v reflect.Value, parentField, tagField, tagRule string) url.
 	for i := 0; i < v.NumField(); i++ {
 		// gets us a StructField
 		fi := t.Field(i)
+		value := v.Field(i)
+
+		if !fi.IsExported() {
+			continue
+		}
 
 		tf := strings.Split(fi.Tag.Get(tagField), ",")
 		tr := fi.Tag.Get(tagRule)
 
 		if tr == "" || tr == "-" {
+			if value.Kind() == reflect.Struct {
+				eb := validateStruct(value, "", tagField, tagRule)
+				mergeKeys(errBag, eb)
+			}
 			continue
 		}
 
@@ -88,15 +97,15 @@ func validateStruct(v reflect.Value, parentField, tagField, tagRule string) url.
 			fieldName = fmt.Sprintf("%s.%s", parentField, fieldName)
 		}
 
-		validate(v.Field(i).Interface(), fieldName, tags, errBag)
+		validate(value.Interface(), fieldName, tags, errBag)
 
-		switch v.Field(i).Kind() {
+		switch value.Kind() {
 		case reflect.Struct:
-			eb := validateStruct(v.Field(i), fieldName, tagField, tagRule)
+			eb := validateStruct(value, fieldName, tagField, tagRule)
 			mergeKeys(errBag, eb)
 		case reflect.Slice:
 		case reflect.Ptr:
-			ptrRef := reflect.Indirect(v.Field(i))
+			ptrRef := reflect.Indirect(value)
 			switch ptrRef.Kind() {
 			case reflect.Struct:
 				eb := validateStruct(ptrRef, fieldName, tagField, tagRule)
